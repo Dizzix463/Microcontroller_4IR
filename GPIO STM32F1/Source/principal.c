@@ -7,68 +7,71 @@
 #define BP_EXTERN 8
 
 int main ( void )
-{
+{	
 	/* Initialize the pin for the GPIO_DIODE */
-	GPIO_InitStruct GPIO_DIODE;
+	MyGPIO_Struct_TypeDef diode;
 	
 	/* Initialize the GPIO for the extern led */
-	GPIO_InitStruct GPIO_LED_EXTERN;
+	MyGPIO_Struct_TypeDef led;
 	
 	/* Initialize the GPIO for the Broche button */
-	GPIO_InitStruct GPIO_BROCHE_BUTTON;
+	MyGPIO_Struct_TypeDef brocheButton;
 	
 	/* Initialize the GPIO for the extern button */
-	GPIO_InitStruct GPIO_EXTERN_BUTTON;
-	
-	/* Enabling GPIOA clock */
-	RCC_GPIOA_CLK_ENABLE();
-	
-	/* Enabling GPIOC clock */
-	RCC_GPIOC_CLK_ENABLE();
-	
-	/* Configure the GPIOA pin of the DIODE */
-	GPIO_DIODE.Pin = BROCHE_DIODE;
-	GPIO_DIODE.Mode = GPIO_PIN_MODE_OUTPUT_2MHZ;
-	GPIO_DIODE.OutputMode = GPIO_PIN_OUTPUT_PUSHPULL;
-	GPIO_Init(GPIOA, &GPIO_DIODE); // Init the GPIO
+	MyGPIO_Struct_TypeDef externalButton;
 	
 	
-	/* Configure the GPIOC pin for the exetern diode */
-	GPIO_LED_EXTERN.Pin = LED_EXTERN;
-	GPIO_LED_EXTERN.Mode = GPIO_PIN_MODE_OUTPUT_2MHZ;
-	GPIO_LED_EXTERN.OutputMode = GPIO_PIN_OUTPUT_PUSHPULL;
-	GPIO_Init(GPIOC, &GPIO_LED_EXTERN); // Init the GPIO
+	/* Configure the GPIOA pin of the diode */
+	diode.GPIO = GPIOA;
+	diode.GPIO_Pin = BROCHE_DIODE;
+	diode.GPIO_Conf = Out_Ppull;
+	MyGPIO_Init(&diode);
+	
+	
+	/* Configure the GPIOC pin for the led */
+	led.GPIO = GPIOC;
+	led.GPIO_Pin = LED_EXTERN;
+	led.GPIO_Conf = Out_Ppull;
+	MyGPIO_Init(&led);
 
 	
-	
 	/* Configure the GPIOC pin for the broche button */ 
-	GPIO_BROCHE_BUTTON.Pin = BROCHE_BUTTON;
-	GPIO_BROCHE_BUTTON.Mode = GPIO_PIN_MODE_INPUT;
-	GPIO_BROCHE_BUTTON.OutputMode = GPIO_PIN_INPUT_FLOATING;
-	GPIO_Init(GPIOC, &GPIO_BROCHE_BUTTON);
+	brocheButton.GPIO = GPIOC;
+	brocheButton.GPIO_Pin = BROCHE_BUTTON;
+	brocheButton.GPIO_Conf = In_Floating;
+	MyGPIO_Init(&brocheButton);
 	
-	/* Configure the GPIOC pin for the broche button */ 
-	GPIO_EXTERN_BUTTON.Pin = BP_EXTERN;
-	GPIO_EXTERN_BUTTON.Mode = GPIO_PIN_MODE_INPUT;
-	GPIO_EXTERN_BUTTON.OutputMode = GPIO_PIN_INPUT_FLOATING;
-	GPIO_Init(GPIOC, &GPIO_EXTERN_BUTTON);
+	
+	/* Configure the GPIOC pin for the external button */ 
+	externalButton.GPIO = GPIOC;
+	externalButton.GPIO_Pin = BP_EXTERN;
+	externalButton.GPIO_Conf = In_Floating;
+	MyGPIO_Init(&externalButton);
+	
+	MyGPIO_Reset(diode.GPIO, diode.GPIO_Pin);
+	MyGPIO_Set(diode.GPIO, diode.GPIO_Pin);
+	MyGPIO_Reset(diode.GPIO, diode.GPIO_Pin);
+	
+	MyGPIO_Set(led.GPIO, led.GPIO_Pin);
+	MyGPIO_Reset(led.GPIO, led.GPIO_Pin);			
+	MyGPIO_Set(led.GPIO, led.GPIO_Pin);
+
+
 	
 	while (1)
 	{
+		// Onboard diode lights up when onboard user button is pressed
+		if (MyGPIO_Read(brocheButton.GPIO, brocheButton.GPIO_Pin)) {
+			MyGPIO_Reset(diode.GPIO, diode.GPIO_Pin);
+		} else {
+			MyGPIO_Set(diode.GPIO, diode.GPIO_Pin);
+		}
 		
-		if (GPIO_Input_Check(GPIOC,&GPIO_BROCHE_BUTTON)){ //(GPIOC->IDR & (1<<BROCHE_BUTTON)
-			GPIO_unMark(GPIOA, &GPIO_DIODE); //Masque pour mettre l'octet de rang 1 de GPIOA_ODR à 2 => coché la 5eme case
-		}
-		else{
-			GPIO_Mark(GPIOA, &GPIO_DIODE);
-		}
-		
-		if (GPIO_Input_Check(GPIOC,&GPIO_EXTERN_BUTTON)){
-			GPIO_Mark(GPIOC, &GPIO_LED_EXTERN); //Masque pour mettre l'octet de rang 1 de GPIOA_ODR à 2 => coché la 5eme case
-		}
-		else{
-			GPIO_unMark(GPIOC, &GPIO_LED_EXTERN);
+		// external led lights up when external button is pressed
+		if (MyGPIO_Read(externalButton.GPIO, externalButton.GPIO_Pin)) {
+			MyGPIO_Set(led.GPIO, led.GPIO_Pin);
+		} else {
+			MyGPIO_Reset(led.GPIO, led.GPIO_Pin);
 		}
 	}
-
 }

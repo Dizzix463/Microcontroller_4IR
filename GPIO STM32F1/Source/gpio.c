@@ -1,67 +1,44 @@
 #include "gpio.h"
 
-
-/**
- * @brief Set the mode of a selected pin : Input, Output Analog or Alternative mode
- * @param GPIOx : GPIO adress
- * @param pin : GPIO pin number
- * @param mode : mode to be selected
- * @return null
- */
-
-void GPIO_Configure_Pin_Mode(GPIO_TypeDef * GPIOx, uint16_t pin, uint32_t mode){
-    /* Need to compare if the pin is above 8 or not */
-    if (pin < 8){
-        /* We are in the CRL */
-        GPIOx->CRL &= ~(0x03 << (4 * pin)); //set the mask to clear mode bits
-        GPIOx->CRL |=  (mode << (4* pin)); //set the mode
-    }
-    else if(pin > 7)
-    {
-        /* We are in the CRH */
-        GPIOx->CRH &= ~(0x03 << (4 * (pin % 8))); //set the mask to clear mode bits
-        GPIOx->CRH |= (mode << (4 * (pin % 8))); //set the mode
-    }
+void MyGPIO_Init (MyGPIO_Struct_TypeDef * GPIOStructPtr){
+	// Activate the corresponding GPIO Clock
+	if (GPIOStructPtr->GPIO == GPIOA) {
+		RCC->APB2ENR |= RCC_APB2ENR_IOPAEN;
+	} else if (GPIOStructPtr->GPIO == GPIOB) {
+		RCC->APB2ENR |= RCC_APB2ENR_IOPBEN;
+	} else if (GPIOStructPtr->GPIO == GPIOC) {
+		RCC->APB2ENR |= RCC_APB2ENR_IOPCEN;
+	} else if (GPIOStructPtr->GPIO == GPIOD) {
+		RCC->APB2ENR |= RCC_APB2ENR_IOPDEN;
+	} else if (GPIOStructPtr->GPIO == GPIOE) {
+		RCC->APB2ENR |= RCC_APB2ENR_IOPEEN;
+	}
+	
+	// Configurate the correct settings for the corresponding GPIO Pin
+	if (GPIOStructPtr->GPIO_Pin > 7) {
+		GPIOStructPtr->GPIO->CRH &= ~(0x0f << (GPIOStructPtr->GPIO_Pin - 8) * 4);
+		GPIOStructPtr->GPIO->CRH |= (GPIOStructPtr->GPIO_Conf << (GPIOStructPtr->GPIO_Pin - 8) * 4);
+	} else {
+		GPIOStructPtr->GPIO->CRL &= ~(0x0f << (GPIOStructPtr->GPIO_Pin) * 4);
+		GPIOStructPtr->GPIO->CRL |= (GPIOStructPtr->GPIO_Conf << (GPIOStructPtr->GPIO_Pin) * 4);
+	}
 }
 
-/**
- * @brief Set the output mode of a pin
- * @param GPIOx : GPIO adress
- * @param pin : pin number
- * @param outputmode : Output type to be set
- * @return null
- */
-
-void GPIO_Configure_Pin_OutputMode(GPIO_TypeDef * GPIOx, uint16_t pin, uint32_t mode, uint32_t outputmode){
-    
-    GPIOx->BSRR &= ~(0x1 << pin);	// clear bit
-	GPIOx->BSRR |= (0x1 << pin);	// as an output
-
-    if(pin < 8)
-    {
-        GPIOx->CRL &= ~(0x03 << ( 4 * pin + 2)); // clear cnf bits
-        GPIOx->CRL |= (outputmode << ( 4 * pin + 2)); // select output type
-    }
-    else if(pin > 7)
-    {
-        GPIOx->CRH &= ~(0x03 << ( 4 * (pin % 8) + 2)); // clear cnf bits
-        GPIOx->CRH |= (outputmode << ( 4 * (pin % 8) + 2)); // select output type
-    }
+int MyGPIO_Read(GPIO_TypeDef * GPIO, char GPIO_Pin) {
+	return (GPIO->IDR & (0x01 << GPIO_Pin));	
 }
 
-void GPIO_Init(GPIO_TypeDef * GPIOx, GPIO_InitStruct * gpio_config){
-    GPIO_Configure_Pin_Mode(GPIOx, gpio_config->Pin, gpio_config->Mode);
-    GPIO_Configure_Pin_OutputMode(GPIOx, gpio_config->Pin,gpio_config->Mode,gpio_config->OutputMode);
+void MyGPIO_Set(GPIO_TypeDef * GPIO, char GPIO_Pin) {
+	GPIO->ODR |= (0x01 << GPIO_Pin);
 }
 
-uint16_t GPIO_Input_Check(GPIO_TypeDef * GPIOx, GPIO_InitStruct * gpio_config){
-		return (GPIOx->IDR & (1<<gpio_config->Pin));	
+void MyGPIO_Reset(GPIO_TypeDef * GPIO, char GPIO_Pin) {
+	GPIO->ODR &= (0x0 << GPIO_Pin);	
 }
-
-void GPIO_Mark(GPIO_TypeDef * GPIOx, GPIO_InitStruct * gpio_config){
-		GPIOx->ODR |= (0x1 << gpio_config->Pin);
-}
-
-void GPIO_unMark(GPIO_TypeDef * GPIOx, GPIO_InitStruct * gpio_config){
-		GPIOx->ODR &= (0x0 << gpio_config->Pin);;	
+void MyGPIO_Toggle(GPIO_TypeDef * GPIO, char GPIO_Pin) {
+	if (MyGPIO_Read(GPIO, GPIO_Pin)) {
+		MyGPIO_Reset(GPIO, GPIO_Pin);
+	} else {
+		MyGPIO_Set(GPIO, GPIO_Pin);
+	}
 }

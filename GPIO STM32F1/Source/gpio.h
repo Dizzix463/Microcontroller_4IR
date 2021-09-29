@@ -1,22 +1,29 @@
+#ifndef MYGPIO_H
+#define MYGPIO_H
 #include "stm32f10x.h"
 
+/**
+ * @brief GPIO PIN config structure
+ */
+typedef struct
+{
+	GPIO_TypeDef * GPIO;
+	char GPIO_Pin;  //numero de 0 a 15
+	char GPIO_Conf; // voir ci dessous
+} MyGPIO_Struct_TypeDef;
+
 /* GPIO Control Settings Values */
-#define GPIO_PIN_INPUT_ANALOG_MODE ( (uint32_t) 0x00)
-#define GPIO_PIN_INPUT_FLOATING ( (uint32_t) 0x01)
-#define GPIO_PIN_INPUT_PUPD ( (uint32_t) 0x10)
-
-#define GPIO_PIN_OUTPUT_PUSHPULL ( (uint32_t) 0x00)
-#define GPIO_PIN_OUTPUT_OPENDRAIN ( (uint32_t) 0x01)
-#define GPIO_PIN_OUTPUT_ALT_PUSHPULL ( (uint32_t) 0x10)
-#define GPIO_PIN_OUTPUT_ALT_OPENDRAIN ( (uint32_t) 0x11)
-
-#define GPIO_PIN_MODE_INPUT ( (uint32_t) 0x00)
-#define GPIO_PIN_MODE_OUTPUT_10MHZ ( (uint32_t) 0x10)
-#define GPIO_PIN_MODE_OUTPUT_2MHZ ( (uint32_t) 0x2)
-#define GPIO_PIN_MODE_OUTPUT_50MHZ ( (uint32_t) 0x11)
-
+#define In_Floating 0x04
+#define In_PullDown 0x08
+#define In_PullUp 0x08
+#define In_Analog 0x00
+#define Out_Ppull 0x02
+#define Out_OD 0x06
+#define AltOut_Ppull 0x0a
+#define AltOut_OD 0x0e
 
 /* GPIO Ports Clock Configuration */
+/*
 #define RCC_AFIO_CLK_ENABLE()        (RCC->APB2ENR |=  (1 << 0) )
 #define RCC_GPIOA_CLK_ENABLE()       (RCC->APB2ENR |=  (1 << 2) )
 #define RCC_GPIOB_CLK_ENABLE()       (RCC->APB2ENR |=  (1 << 3) )
@@ -29,49 +36,13 @@
 #define RCC_GPIOC_CLK_DISABLE()       (RCC->APB2ENR &=  ~(1 << 4) )
 #define RCC_GPIOD_CLK_DISABLE()       (RCC->APB2ENR &=  ~(1 << 5) )
 #define RCC_GPIOE_CLK_DISABLE()       (RCC->APB2ENR &=  ~(1 << 6) )
+*/
 
-/**
- * @brief GPIO PIN config structure
- */
+// Functions
+void MyGPIO_Init(MyGPIO_Struct_TypeDef * GPIOStructPtr);
+int MyGPIO_Read(GPIO_TypeDef * GPIO, char GPIO_Pin);
+void MyGPIO_Set(GPIO_TypeDef * GPIO, char GPIO_Pin);
+void MyGPIO_Reset(GPIO_TypeDef * GPIO, char GPIO_Pin);
+void MyGPIO_Toggle(GPIO_TypeDef * GPIO, char GPIO_Pin);
 
-typedef struct
-{
-    uint32_t Pin;
-    uint32_t Mode;
-    uint32_t OutputMode;
-}GPIO_InitStruct;
-
-
-/**
- * @brief GPIO function set mode
- */
-void GPIO_Configure_Pin_Mode(GPIO_TypeDef * GPIOx, uint16_t pin, uint32_t mode);
-
-
-/**
- * @brief GPIO functon set outputmode
- */
-void GPIO_Configure_Pin_OutputMode(GPIO_TypeDef * GPIOx, uint16_t pin, uint32_t mode, uint32_t outputmode);
-
-
-/**
- * @brief GPIO function header
- */
-
-void GPIO_Init(GPIO_TypeDef * GPIOx, GPIO_InitStruct * GPIO_PIN_CONF);
-
-/**
- * @brief Check the correspondant pin 
- */
-uint16_t GPIO_Input_Check(GPIO_TypeDef * GPIOx, GPIO_InitStruct * GPIO_CONF);
-
-/**
- * @brief Mark the correspondant pin of a GPIO 
- */
-void GPIO_Mark(GPIO_TypeDef * GPIOx, GPIO_InitStruct * gpio_config);
-
-
-/**
- * @brief unMark the correspondant pin of a GPIO 
- */
-void GPIO_unMark(GPIO_TypeDef * GPIOx, GPIO_InitStruct * gpio_config);
+#endif
