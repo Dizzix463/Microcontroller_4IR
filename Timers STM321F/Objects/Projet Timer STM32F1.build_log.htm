@@ -17,20 +17,84 @@ Library Manager: ArmAr.exe V6.16
 Hex Converter:   FromElf.exe V6.16
 CPU DLL:         SARMCM3.DLL V5.34.0.0
 Dialog DLL:      DARMSTM.DLL V1.68.0.0
-Target DLL:      UL2CM3.DLL V1.163.9.0
+Target DLL:      STLink\ST-LINKIII-KEIL_SWO.dll V3.0.8.0
 Dialog DLL:      TARMSTM.DLL V1.66.0.0
  
 <h2>Project:</h2>
-U:\Windows\Bureau\Timers STM321F\Projet Timer STM32F1.uvprojx
-Project File Date:  09/20/2021
+U:\Windows\Bureau\STM32F1\Timers STM321F\Projet Timer STM32F1.uvprojx
+Project File Date:  09/27/2021
 
 <h2>Output:</h2>
 *** Using Compiler 'V6.16', folder: 'C:\Keil_v5\ARM\ARMCLANG\Bin'
-Build target 'Simule'
+Rebuild target 'Reel'
+assembling startup_stm32f10x_md.s...
+Source/timer.c(34): warning: unused parameter 'IT_function' [-Wunused-parameter]
+void MyTimer_ActiveIT ( TIM_TypeDef  * Timer , char Prio, void (*IT_function) (void)) 
+                                                                 ^
+Source/timer.c(61): warning: no previous prototype for function 'TIM2_IRQHandler' [-Wmissing-prototypes]
+void TIM2_IRQHandler(void) { 
+     ^
+Source/timer.c(61): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void TIM2_IRQHandler(void) { 
+^
+static 
+2 warnings generated.
+compiling timer.c...
+Source/gpio.c(16): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+        GPIOx->CRL &= ~(0x03 << (4 * pin)); //set the mask to clear mode bits
+                   ~~ ^~~~~~~~~~~~~~~~~~~~
+Source/gpio.c(22): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+        GPIOx->CRH &= ~(0x03 << (4 * (pin % 8))); //set the mask to clear mode bits
+                   ~~ ^~~~~~~~~~~~~~~~~~~~~~~~~~
+Source/gpio.c(42): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+        GPIOx->CRL &= ~(0x03 << ( 4 * pin + 2)); // clear cnf bits
+                   ~~ ^~~~~~~~~~~~~~~~~~~~~~~~~
+Source/gpio.c(47): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+        GPIOx->CRH &= ~(0x03 << ( 4 * (pin % 8) + 2)); // clear cnf bits
+                   ~~ ^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+Source/gpio.c(35): warning: unused parameter 'mode' [-Wunused-parameter]
+void GPIO_Configure_Pin_OutputMode(GPIO_TypeDef * GPIOx, uint16_t pin, uint32_t mode, uint32_t outputmode){
+                                                                                ^
+Source/gpio.c(53): warning: implicit conversion loses integer precision: 'uint32_t' (aka 'unsigned int') to 'uint16_t' (aka 'unsigned short') [-Wimplicit-int-conversion]
+    GPIO_Configure_Pin_Mode(GPIOx, gpio_config->Pin, gpio_config->Mode);
+    ~~~~~~~~~~~~~~~~~~~~~~~        ~~~~~~~~~~~~~^~~
+Source/gpio.c(54): warning: implicit conversion loses integer precision: 'uint32_t' (aka 'unsigned int') to 'uint16_t' (aka 'unsigned short') [-Wimplicit-int-conversion]
+    GPIO_Configure_Pin_OutputMode(GPIOx, gpio_config->Pin,gpio_config->Mode,gpio_config->OutputMode);
+    ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~        ~~~~~~~~~~~~~^~~
+Source/gpio.c(58): warning: implicit conversion loses integer precision: 'unsigned int' to 'uint16_t' (aka 'unsigned short') [-Wimplicit-int-conversion]
+                return (GPIOx->IDR & (1<<gpio_config->Pin));    
+                ~~~~~~  ~~~~~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~
+Source/gpio.c(66): warning: implicit conversion changes signedness: 'int' to 'unsigned int' [-Wsign-conversion]
+                GPIOx->ODR &= (0x0 << gpio_config->Pin);;       
+                           ~~  ~~~~^~~~~~~~~~~~~~~~~~~
+Source/gpio.c(66): warning: empty expression statement has no effect; remove unnecessary ';' to silence this warning [-Wextra-semi-stmt]
+                GPIOx->ODR &= (0x0 << gpio_config->Pin);;       
+                                                        ^
+10 warnings generated.
+compiling gpio.c...
+RTE/Device/STM32F103RB/system_stm32f10x.c(167): warning: no previous extern declaration for non-static variable 'AHBPrescTable' [-Wmissing-variable-declarations]
+__I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
+            ^
+RTE/Device/STM32F103RB/system_stm32f10x.c(167): note: declare 'static' if the variable is not intended to be used outside of this translation unit
+__I uint8_t AHBPrescTable[16] = {0, 0, 0, 0, 0, 0, 0, 0, 1, 2, 3, 4, 6, 7, 8, 9};
+    ^
+1 warning generated.
+compiling system_stm32f10x.c...
+Source/main.c(7): warning: no previous prototype for function 'ledToggle' [-Wmissing-prototypes]
+void ledToggle() {
+     ^
+Source/main.c(7): note: declare 'static' if the function is not intended to be used outside of this translation unit
+void ledToggle() {
+^
+static 
+Source/main.c(7): warning: this old-style function definition is not preceded by a prototype [-Wstrict-prototypes]
+void ledToggle() {
+              ^
+2 warnings generated.
 compiling main.c...
 linking...
-Program Size: Code=640 RO-data=252 RW-data=0 ZI-data=1632  
-".\Objects\Projet Timer STM32F1.axf" - 0 Error(s), 0 Warning(s).
+Program Size: Code=1068 RO-data=252 RW-data=0 ZI-data=1632  
+".\Objects\Projet Timer STM32F1.axf" - 0 Error(s), 15 Warning(s).
 
 <h2>Software Packages used:</h2>
 
@@ -48,7 +112,7 @@ Package Vendor: Keil
 
 <h2>Collection of Component include folders:</h2>
   .\RTE\Device\STM32F103RB
-  .\RTE\_Simule
+  .\RTE\_Reel
   C:\Programdata\Keil\Arm\Packs\ARM\CMSIS\5.7.0\CMSIS\Core\Include
   C:\Programdata\Keil\Arm\Packs\Keil\STM32F1xx_DFP\2.3.0\Device\Include
 
@@ -57,11 +121,11 @@ Package Vendor: Keil
    * Component: ARM::CMSIS:CORE:5.4.0
 
    * Component: Keil::Device:Startup:1.0.0
-      Source file:   Device\Source\ARM\startup_stm32f10x_md.s
-      Source file:   Device\Source\system_stm32f10x.c
-      Include file:  RTE_Driver\Config\RTE_Device.h
       Source file:   Device\Source\ARM\STM32F1xx_OPT.s
-Build Time Elapsed:  00:00:01
+      Source file:   Device\Source\system_stm32f10x.c
+      Source file:   Device\Source\ARM\startup_stm32f10x_md.s
+      Include file:  RTE_Driver\Config\RTE_Device.h
+Build Time Elapsed:  00:00:00
 </pre>
 </body>
 </html>

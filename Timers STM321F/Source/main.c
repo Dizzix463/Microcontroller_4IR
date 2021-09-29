@@ -1,16 +1,49 @@
 #include "stm32f10x.h"
 #include "timer.h"
+#include "gpio.h"
+
+#define LED 10
+
+// Define led structure
+MyGPIO_Struct_TypeDef led;
+	
+void Callback() {
+	MyGPIO_Toggle(led.GPIO, led.GPIO_Pin);
+}
 
 int main(void){
 	
-	// Initialize clock
-	 RCC->APB2ENR |= (1<<2) | (1<<3) | (1<<4);
+	// Define Timer structure
+	MyTimer_Struct_TypeDef myTimer;
 	
-	// Branch the GPIO A to the APB2 clock (Activer ??)
-	RCC->APB2ENR |= RCC_APB2ENR_IOPAEN;
+	// Configure the GPIOC of the led
+	led.GPIO = GPIOC;
+	led.GPIO_Pin = LED;
+	led.GPIO_Conf = Out_Ppull;
+	MyGPIO_Init(&led);
+	
+	// Configure timer settings
+	myTimer.Timer = TIM2;
+	myTimer.ARR = 6000 - 1;
+	myTimer.PSC = 6000 - 1;
+	
 	
 	// Fix period of the Timer for 500 ms
-	// TIM2->SR = 0;
+	/*
 	TIM2->ARR = 6000 - 1;
 	TIM2->PSC = 6000 - 1;
+	TIM2->CR1 |= (1<<0);
+	TIM2->DIER |= TIM_DIER_UIE;
+	NVIC->ISER[0] |= (1 << TIM2_IRQn);
+	*/
+	
+	
+	
+	MyTimer_Base_Init(&myTimer);
+	MyTimer_Base_Start(myTimer.Timer);
+	MyTimer_ActiveIT(myTimer.Timer , 4, &Callback ) ;
+	
+	
+	while(1) {
+	}
 }
