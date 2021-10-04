@@ -86,3 +86,51 @@ void TIM4_IRQHandler(void) {
     }
 		( * callback)();
 }
+
+
+
+
+void MyTimer_PWM(TIM_TypeDef*Timer ,char Channel ) {
+	
+	if (Timer == TIM1) {
+		TIM1->CR2 |= TIM_BDTR_MOE;
+	}
+	
+	// Set PWM mode 1
+	if (Channel == 1) {
+		Timer->CCMR1 &= ~TIM_CCMR1_OC1M_0;
+		Timer->CCMR1 |= TIM_CCMR1_OC1M_1 | TIM_CCMR1_OC1M_2;
+		Timer->CCER |= TIM_CCER_CC1E;
+	}
+	else if (Channel == 2) {
+		Timer->CCMR1 &= ~TIM_CCMR1_OC2M_0;
+		Timer->CCMR1 |= TIM_CCMR1_OC2M_1 | TIM_CCMR1_OC2M_2;
+		Timer->CCER |= TIM_CCER_CC2E;
+	}
+	else if (Channel == 3) {
+		Timer->CCMR2 &= ~TIM_CCMR2_OC3M_0;
+		Timer->CCMR2 |= TIM_CCMR2_OC3M_1 | TIM_CCMR2_OC3M_2;
+		Timer->CCER |= TIM_CCER_CC3E;
+	}
+	else if (Channel == 4) {
+		Timer->CCMR2 &= ~TIM_CCMR2_OC4M_0;
+		Timer->CCMR2 |= TIM_CCMR2_OC4M_1 | TIM_CCMR2_OC4M_2;
+		Timer->CCER |= TIM_CCER_CC4E;
+	}
+}
+
+void Rapport_Cyclique (TIM_TypeDef * Timer,char Channel, float Ratio ) {
+	
+	if (Channel == 1 ){
+		Timer->CCR1 = (int)Timer->ARR * Ratio;
+		
+	}	else if (Channel == 2 ){
+		Timer->CCR2 = (int)Timer->ARR * Ratio;
+		
+	}else if (Channel == 3 ){
+		Timer->CCR3 = (int)Timer->ARR * Ratio;
+		
+	}else if (Channel == 4 ){
+		Timer->CCR4 = (int)Timer->ARR * Ratio;
+	}
+}

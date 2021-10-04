@@ -7,7 +7,7 @@
 // Define led structure
 MyGPIO_Struct_TypeDef led;
 	
-void Callback() {
+void Callback(void) {
 	MyGPIO_Toggle(led.GPIO, led.GPIO_Pin);
 }
 
@@ -24,8 +24,8 @@ int main(void){
 	
 	// Configure timer settings
 	myTimer.Timer = TIM2;
-	myTimer.ARR = 6000 - 1;
-	myTimer.PSC = 6000 - 1;
+	myTimer.ARR = 720 ;
+	myTimer.PSC = 1 ;
 	
 	
 	// Fix period of the Timer for 500 ms
@@ -43,7 +43,11 @@ int main(void){
 	MyTimer_Base_Start(myTimer.Timer);
 	MyTimer_ActiveIT(myTimer.Timer , 4, &Callback ) ;
 	
+	Rapport_Cyclique (myTimer.Timer ,1 , 0.7 );
 	
+	MyTimer_PWM(myTimer.Timer ,1 ) ;
+	
+		
 	while(1) {
 	}
 }

@@ -24,17 +24,22 @@ void MyGPIO_Init (MyGPIO_Struct_TypeDef * GPIOStructPtr){
 	}
 }
 
+// Check the bit of the corresponding GPIO Pin
 int MyGPIO_Read(GPIO_TypeDef * GPIO, char GPIO_Pin) {
 	return (GPIO->IDR & (0x01 << GPIO_Pin));	
 }
 
+// Set the bit of the corresponding GPIO Pin
 void MyGPIO_Set(GPIO_TypeDef * GPIO, char GPIO_Pin) {
 	GPIO->ODR |= (0x01 << GPIO_Pin);
 }
 
+// Reset the bit of the corresponding GPIO Pin
 void MyGPIO_Reset(GPIO_TypeDef * GPIO, char GPIO_Pin) {
-	GPIO->ODR &= (0x0 << GPIO_Pin);	
+	GPIO->ODR &= (0x00 << GPIO_Pin);	
 }
+
+// Toggle the bit of the corresponding GPIO Pin
 void MyGPIO_Toggle(GPIO_TypeDef * GPIO, char GPIO_Pin) {
 	if (MyGPIO_Read(GPIO, GPIO_Pin)) {
 		MyGPIO_Reset(GPIO, GPIO_Pin);
